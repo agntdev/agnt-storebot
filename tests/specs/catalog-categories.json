@@ -1,0 +1,20 @@
+[
+  {
+    "name": "Browse Products",
+    "steps": [
+      {
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "View product categories and item listings"
+            }
+          }
+        ],
+        "send": {
+          "callback": "catalog:categories"
+        }
+      }
+    ]
+  }
+]
