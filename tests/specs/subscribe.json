@@ -1,0 +1,77 @@
+[
+  {
+    "name": "Alerts empty state",
+    "steps": [
+      {
+        "send": { "callback": "sub:menu" },
+        "expect": [
+          {
+            "method": "editMessageText",
+            "payload": {
+              "text": "No product alerts yet.\n\nOpen a product that's out of stock and tap Alert me when restocked — or pick a product below."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Subscribe and restock notification",
+    "steps": [
+      {
+        "send": { "callback": "admin:login" },
+        "expect": [{ "method": "editMessageText" }]
+      },
+      { "send": { "text": "store-admin" }, "expect": [{ "method": "sendMessage" }] },
+      { "send": { "callback": "admin:pnew" }, "expect": [{ "method": "editMessageText" }] },
+      { "send": { "text": "Limited Tee" }, "expect": [{ "method": "sendMessage" }] },
+      { "send": { "text": "TEE-1" }, "expect": [{ "method": "sendMessage" }] },
+      { "send": { "text": "25" }, "expect": [{ "method": "sendMessage" }] },
+      { "send": { "text": "0" }, "expect": [{ "method": "sendMessage" }] },
+      { "send": { "text": "Apparel" }, "expect": [{ "method": "sendMessage" }] },
+      {
+        "send": { "callback": "sub:add:TEE-1" },
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "You'll get a message when Limited Tee restocks or goes on sale."
+            }
+          }
+        ]
+      },
+      {
+        "send": { "callback": "sub:menu" },
+        "expect": [
+          {
+            "method": "editMessageText",
+            "payload": {
+              "text": "Your alerts\n\n• Limited Tee (restock)\n\nWe'll message you when subscribed items restock."
+            }
+          }
+        ]
+      },
+      {
+        "send": { "callback": "admin:pe:stock:TEE-1" },
+        "expect": [{ "method": "editMessageText" }]
+      },
+      {
+        "send": { "text": "12" },
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "Limited Tee is back in stock (12 available).\nPrice: $25.00\nTap Browse Products to order."
+            }
+          },
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "Product updated."
+            }
+          }
+        ]
+      }
+    ]
+  }
+]
