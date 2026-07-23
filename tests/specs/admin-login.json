@@ -1,19 +1,218 @@
 [
   {
-    "name": "Admin Panel",
+    "name": "Admin Panel prompts for token",
     "steps": [
       {
+        "send": { "callback": "admin:login" },
+        "expect": [
+          {
+            "method": "editMessageText",
+            "payload": {
+              "text": "Enter the admin access token as a message.\n\nIf you don't have it, ask the store owner."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Admin product CRUD operations",
+    "steps": [
+      {
+        "send": { "callback": "admin:login" },
+        "expect": [{ "method": "editMessageText" }]
+      },
+      {
+        "send": { "text": "wrong-token" },
         "expect": [
           {
             "method": "sendMessage",
             "payload": {
-              "text": "Secure access to product/order management"
+              "text": "That token doesn't match. Try again, or tap Cancel from Admin Panel."
             }
           }
-        ],
-        "send": {
-          "callback": "admin:login"
-        }
+        ]
+      },
+      {
+        "send": { "text": "store-admin" },
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "Admin panel\n\nManage products, update orders, broadcast, or export history."
+            }
+          }
+        ]
+      },
+      {
+        "send": { "callback": "admin:products" },
+        "expect": [
+          {
+            "method": "editMessageText",
+            "payload": {
+              "text": "Products\n\nNo products yet — tap Add product to create one."
+            }
+          }
+        ]
+      },
+      {
+        "send": { "callback": "admin:pnew" },
+        "expect": [{ "method": "editMessageText" }]
+      },
+      { "send": { "text": "Notebook" }, "expect": [{ "method": "sendMessage" }] },
+      { "send": { "text": "NOTE-1" }, "expect": [{ "method": "sendMessage" }] },
+      { "send": { "text": "6.00" }, "expect": [{ "method": "sendMessage" }] },
+      { "send": { "text": "20" }, "expect": [{ "method": "sendMessage" }] },
+      {
+        "send": { "text": "Stationery" },
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "Added Notebook (NOTE-1) — $6.00, stock 20."
+            }
+          }
+        ]
+      },
+      {
+        "send": { "callback": "admin:pv:NOTE-1" },
+        "expect": [
+          {
+            "method": "editMessageText",
+            "payload": {
+              "text": "Notebook\nSKU: NOTE-1\nPrice: $6.00\nStock: 20\nCategory: Stationery"
+            }
+          }
+        ]
+      },
+      {
+        "send": { "callback": "admin:pe:stock:NOTE-1" },
+        "expect": [
+          {
+            "method": "editMessageText",
+            "payload": {
+              "text": "Send the new stock quantity (whole number)."
+            }
+          }
+        ]
+      },
+      {
+        "send": { "text": "0" },
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "Product updated."
+            }
+          }
+        ]
+      },
+      {
+        "send": { "callback": "admin:pd:NOTE-1" },
+        "expect": [
+          {
+            "method": "editMessageText",
+            "payload": {
+              "text": "Delete product NOTE-1? This can't be undone."
+            }
+          }
+        ]
+      },
+      {
+        "send": { "callback": "admin:pdok:NOTE-1" },
+        "expect": [
+          {
+            "method": "editMessageText",
+            "payload": {
+              "text": "Product NOTE-1 deleted."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Admin order status update notifies customer",
+    "steps": [
+      {
+        "send": { "callback": "admin:login" },
+        "expect": [{ "method": "editMessageText" }]
+      },
+      { "send": { "text": "store-admin" }, "expect": [{ "method": "sendMessage" }] },
+      { "send": { "callback": "admin:pnew" }, "expect": [{ "method": "editMessageText" }] },
+      { "send": { "text": "Candle" }, "expect": [{ "method": "sendMessage" }] },
+      { "send": { "text": "CND-1" }, "expect": [{ "method": "sendMessage" }] },
+      { "send": { "text": "15" }, "expect": [{ "method": "sendMessage" }] },
+      { "send": { "text": "2" }, "expect": [{ "method": "sendMessage" }] },
+      { "send": { "text": "Home" }, "expect": [{ "method": "sendMessage" }] },
+      {
+        "send": { "callback": "profile:addr" },
+        "expect": [{ "method": "editMessageText" }]
+      },
+      {
+        "send": { "text": "1 Main Rd" },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "callback": "cart:add:CND-1" },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "callback": "cart:checkout" },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "callback": "pay:ok:o1" },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "callback": "admin:ov:o1" },
+        "expect": [
+          {
+            "method": "editMessageText",
+            "payload": {
+              "text": "Order o1\nCustomer: Test\nTotal: $15.00\nPayment: paid\nFulfillment: confirmed\nShip to: 1 Main Rd\n\n• Candle × 1"
+            }
+          }
+        ]
+      },
+      {
+        "send": { "callback": "admin:os:o1:shipped" },
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "Order o1 update\n\nYour order is now shipped.\nPayment: paid"
+            }
+          },
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "Order o1 is now shipped. Customer notified when possible."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Admin export empty and with orders",
+    "steps": [
+      {
+        "send": { "callback": "admin:login" },
+        "expect": [{ "method": "editMessageText" }]
+      },
+      { "send": { "text": "store-admin" }, "expect": [{ "method": "sendMessage" }] },
+      {
+        "send": { "callback": "admin:export" },
+        "expect": [
+          {
+            "method": "editMessageText",
+            "payload": {
+              "text": "Nothing to export — no orders yet."
+            }
+          }
+        ]
       }
     ]
   }

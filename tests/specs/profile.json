@@ -1,0 +1,40 @@
+[
+  {
+    "name": "Profile view and edit",
+    "steps": [
+      {
+        "send": { "callback": "profile:view" },
+        "expect": [
+          {
+            "method": "editMessageText",
+            "payload": {
+              "text": "Your profile\n\nName: Test\nEmail: not set\nShipping: not set\n\nWe only share this with store admins for fulfillment."
+            }
+          }
+        ]
+      },
+      {
+        "send": { "callback": "profile:email" },
+        "expect": [
+          {
+            "method": "editMessageText",
+            "payload": {
+              "text": "Send your email address."
+            }
+          }
+        ]
+      },
+      {
+        "send": { "text": "buyer@example.com" },
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "Email saved. We'll use it for receipts when email is enabled."
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

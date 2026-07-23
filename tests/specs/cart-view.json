@@ -1,19 +1,182 @@
 [
   {
-    "name": "View Cart",
+    "name": "View Cart empty state",
     "steps": [
       {
+        "send": { "callback": "cart:view" },
+        "expect": [
+          {
+            "method": "editMessageText",
+            "payload": {
+              "text": "Your cart is empty — tap Browse Products to add something."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "End-to-end purchase with payment success",
+    "steps": [
+      {
+        "send": { "callback": "admin:login" },
+        "expect": [{ "method": "editMessageText" }]
+      },
+      {
+        "send": { "text": "store-admin" },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "callback": "admin:pnew" },
+        "expect": [{ "method": "editMessageText" }]
+      },
+      { "send": { "text": "Tea Towel" }, "expect": [{ "method": "sendMessage" }] },
+      { "send": { "text": "TOWEL-1" }, "expect": [{ "method": "sendMessage" }] },
+      { "send": { "text": "8.00" }, "expect": [{ "method": "sendMessage" }] },
+      { "send": { "text": "5" }, "expect": [{ "method": "sendMessage" }] },
+      {
+        "send": { "text": "Kitchen" },
         "expect": [
           {
             "method": "sendMessage",
             "payload": {
-              "text": "Review cart contents and checkout"
+              "text": "Added Tea Towel (TOWEL-1) — $8.00, stock 5."
             }
           }
-        ],
-        "send": {
-          "callback": "cart:view"
-        }
+        ]
+      },
+      {
+        "send": { "callback": "profile:addr" },
+        "expect": [
+          {
+            "method": "editMessageText",
+            "payload": {
+              "text": "Send your full shipping address."
+            }
+          }
+        ]
+      },
+      {
+        "send": { "text": "12 Market Street, Springfield" },
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "Shipping address saved."
+            }
+          }
+        ]
+      },
+      {
+        "send": { "callback": "catalog:p:TOWEL-1" },
+        "expect": [{ "method": "editMessageText" }]
+      },
+      {
+        "send": { "callback": "cart:add:TOWEL-1" },
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "Added Tea Towel to your cart."
+            }
+          }
+        ]
+      },
+      {
+        "send": { "callback": "cart:view" },
+        "expect": [
+          {
+            "method": "editMessageText",
+            "payload": {
+              "text": "Your cart\n\n• Tea Towel × 1 — $8.00\n\nTotal: $8.00"
+            }
+          }
+        ]
+      },
+      {
+        "send": { "callback": "cart:checkout" },
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "Order o1 is ready — total $8.00.\n\nOnline payments aren't configured yet. Confirm payment to complete the order, or cancel to release stock."
+            }
+          }
+        ]
+      },
+      {
+        "send": { "callback": "pay:ok:o1" },
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "Order confirmed — o1\n\n• Tea Towel × 1 — $8.00\n\nTotal: $8.00\nPayment: paid\nStatus: confirmed\n\nWe'll notify you when it ships."
+            }
+          },
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "Payment confirmed for order o1.\nTotal: $8.00.\n\nYou'll get updates as it ships."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "End-to-end purchase with payment failure",
+    "steps": [
+      {
+        "send": { "callback": "admin:login" },
+        "expect": [{ "method": "editMessageText" }]
+      },
+      { "send": { "text": "store-admin" }, "expect": [{ "method": "sendMessage" }] },
+      { "send": { "callback": "admin:pnew" }, "expect": [{ "method": "editMessageText" }] },
+      { "send": { "text": "Soap Bar" }, "expect": [{ "method": "sendMessage" }] },
+      { "send": { "text": "SOAP-1" }, "expect": [{ "method": "sendMessage" }] },
+      { "send": { "text": "4.50" }, "expect": [{ "method": "sendMessage" }] },
+      { "send": { "text": "3" }, "expect": [{ "method": "sendMessage" }] },
+      { "send": { "text": "Bath" }, "expect": [{ "method": "sendMessage" }] },
+      {
+        "send": { "callback": "profile:addr" },
+        "expect": [{ "method": "editMessageText" }]
+      },
+      {
+        "send": { "text": "9 Oak Ave" },
+        "expect": [{ "method": "sendMessage" }]
+      },
+      {
+        "send": { "callback": "cart:add:SOAP-1" },
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "Added Soap Bar to your cart."
+            }
+          }
+        ]
+      },
+      {
+        "send": { "callback": "cart:checkout" },
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "Order o1 is ready — total $4.50.\n\nOnline payments aren't configured yet. Confirm payment to complete the order, or cancel to release stock."
+            }
+          }
+        ]
+      },
+      {
+        "send": { "callback": "pay:fail:o1" },
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "Payment didn't go through for order o1. Stock is released — you can checkout again when ready."
+            }
+          }
+        ]
       }
     ]
   }

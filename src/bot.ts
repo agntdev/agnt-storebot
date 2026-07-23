@@ -5,8 +5,45 @@ import type { StorageAdapter } from "grammy";
 // The per-chat session shape (ephemeral conversation state only). Extend as the
 // bot grows. Durable domain data must NOT live here — use the toolkit's
 // persistent storage (see AGENTS.md).
+export type FlowStep =
+  | "idle"
+  | "admin_token"
+  | "admin_product_title"
+  | "admin_product_sku"
+  | "admin_product_price"
+  | "admin_product_stock"
+  | "admin_product_category"
+  | "admin_edit_field"
+  | "admin_broadcast"
+  | "profile_name"
+  | "profile_email"
+  | "profile_address"
+  | "checkout_address";
+
+export interface CartLine {
+  sku: string;
+  title: string;
+  price: number;
+  qty: number;
+  variant?: string;
+}
+
 export interface Session {
-  // example: step?: "awaiting_amount";
+  step?: FlowStep;
+  /** Ephemeral cart (session-scoped per blueprint). */
+  cart?: CartLine[];
+  /** Admin authenticated for this chat session. */
+  adminAuthed?: boolean;
+  /** Draft fields for multi-step admin product create/edit. */
+  draftSku?: string;
+  draftTitle?: string;
+  draftPrice?: number;
+  draftStock?: number;
+  draftCategory?: string;
+  draftVariants?: string[];
+  editField?: "title" | "price" | "stock" | "category";
+  /** Order awaiting payment confirmation. */
+  pendingOrderId?: string;
 }
 
 export type Ctx = BotContext<Session>;

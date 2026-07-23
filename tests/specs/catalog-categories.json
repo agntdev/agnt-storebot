@@ -1,19 +1,143 @@
 [
   {
-    "name": "Browse Products",
+    "name": "Browse Products empty catalog",
     "steps": [
       {
+        "send": { "callback": "catalog:categories" },
+        "expect": [
+          {
+            "method": "editMessageText",
+            "payload": {
+              "text": "No products yet — check back soon, or ask the store owner to add some."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Browse Products lists categories after admin adds stock",
+    "steps": [
+      {
+        "send": { "callback": "admin:login" },
+        "expect": [
+          {
+            "method": "editMessageText",
+            "payload": {
+              "text": "Enter the admin access token as a message.\n\nIf you don't have it, ask the store owner."
+            }
+          }
+        ]
+      },
+      {
+        "send": { "text": "store-admin" },
         "expect": [
           {
             "method": "sendMessage",
             "payload": {
-              "text": "View product categories and item listings"
+              "text": "Admin panel\n\nManage products, update orders, broadcast, or export history."
             }
           }
-        ],
-        "send": {
-          "callback": "catalog:categories"
-        }
+        ]
+      },
+      {
+        "send": { "callback": "admin:pnew" },
+        "expect": [
+          {
+            "method": "editMessageText",
+            "payload": {
+              "text": "New product — send the product title."
+            }
+          }
+        ]
+      },
+      {
+        "send": { "text": "Ceramic Mug" },
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "Send a short SKU (letters/numbers, e.g. MUG-01)."
+            }
+          }
+        ]
+      },
+      {
+        "send": { "text": "MUG-01" },
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "Send the price in dollars (e.g. 12.50)."
+            }
+          }
+        ]
+      },
+      {
+        "send": { "text": "12.50" },
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "Send starting stock (whole number)."
+            }
+          }
+        ]
+      },
+      {
+        "send": { "text": "10" },
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "Send the category name (e.g. Home)."
+            }
+          }
+        ]
+      },
+      {
+        "send": { "text": "Home" },
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "Added Ceramic Mug (MUG-01) — $12.50, stock 10."
+            }
+          }
+        ]
+      },
+      {
+        "send": { "callback": "catalog:categories" },
+        "expect": [
+          {
+            "method": "editMessageText",
+            "payload": {
+              "text": "Choose a category:"
+            }
+          }
+        ]
+      },
+      {
+        "send": { "callback": "catalog:cat:Home" },
+        "expect": [
+          {
+            "method": "editMessageText",
+            "payload": {
+              "text": "Home:"
+            }
+          }
+        ]
+      },
+      {
+        "send": { "callback": "catalog:p:MUG-01" },
+        "expect": [
+          {
+            "method": "editMessageText",
+            "payload": {
+              "text": "Ceramic Mug\n$12.50 · 10 in stock\nCategory: Home"
+            }
+          }
+        ]
       }
     ]
   }
